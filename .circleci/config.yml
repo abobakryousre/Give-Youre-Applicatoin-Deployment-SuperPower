@@ -22,17 +22,20 @@ commands:
             sudo add-apt-repository --yes --update ppa:ansible/ansible
             sudo apt install 
             
-#   destroy-environment:
-#     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-#     parameters:
-#       # Add parameter here   
-#     steps:
-#       - run:
-#           name: Destroy environments
-#           when: on_fail
-#           command: |
-#             # Your code here
-#             exit 1
+  destroy-environment:
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+      type: string
+      Workflow_ID:
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name udacity-backend-<< parameters.Workflow_ID >>
+            aws sr rm s3://udacity-<< parameters.Workflow_ID >>
+            aws cloudformation delete-stack --stack-name udacity-frontend-<< parameters.Workflow_ID >>
 
 #   revert-migrations:
 #     description: Revert the last migration if successfully run in the current workflow.
@@ -184,7 +187,8 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-      # Here's where you will add some code to rollback on failure      
+      - destroy-environment
+      
 
 #   configure-infrastructure:
 #     docker:
