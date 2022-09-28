@@ -35,7 +35,7 @@ commands:
           when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name udacity-backend-<< parameters.Workflow_ID >>
-            aws sr rm s3://udacity-<< parameters.Workflow_ID >>
+            aws s3 rm s3://udacity-<< parameters.Workflow_ID >>
             aws cloudformation delete-stack --stack-name udacity-frontend-<< parameters.Workflow_ID >>
 
 #   revert-migrations:
@@ -210,7 +210,7 @@ jobs:
             cd .circleci/ansible
             cat inventory.txt
             ansible-playbook -i inventory.txt configure-server.yml
-      - destroy_environment   
+      - destroy_environment
 
 #   run-migrations:
 #     docker:
@@ -338,13 +338,13 @@ workflows:
       #     requires: [build-backend]
       # - scan-frontend:
       #     requires: [build-frontend]
-      - deploy-infrastructure:
-          #requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      - configure-infrastructure
+          #requires: [deploy-infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
