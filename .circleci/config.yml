@@ -20,7 +20,7 @@ commands:
             sudo apt update
             sudo apt install software-properties-common
             sudo add-apt-repository --yes --update ppa:ansible/ansible
-            sudo apt install 
+            sudo apt install ansible
             
   destroy_environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -208,9 +208,10 @@ jobs:
           name: Configure server
           command: |
             cd .circleci/ansible
+            echo "44.201.105.244" >> inventory.txt
             cat inventory.txt
             ansible --version
-            #ansible-playbook -i inventory.txt configure-server.yml
+            ansible-playbook -i inventory.txt configure-server.yml
       #- destroy_environment
 
 #   run-migrations:
