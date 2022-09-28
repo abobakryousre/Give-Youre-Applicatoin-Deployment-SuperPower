@@ -39,7 +39,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build-deps]
+          keys: [frontend-build-deps-2]
       - run:
           name: Build front-end
           command: |
@@ -48,7 +48,7 @@ jobs:
             npm run build
       - save_cache:
           paths: [frontend/node_modules]
-          key: frontend-build-deps
+          key: frontend-build-deps-2
 
   build-backend:
     docker:
@@ -56,7 +56,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-deps]
+          keys: [backend-build-dep-2]
       - run:
           name: Back-end build
           command: |
@@ -65,7 +65,7 @@ jobs:
              npm run build
       - save_cache:
           paths: [backend/node_modules]
-          key: backend-build-deps
+          key: backend-build-deps-2
 
   test-frontend:
     docker:
@@ -73,7 +73,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build-deps]
+          keys: [frontend-build-deps-2]
       - run:
           name: Fron-end Unit Test
           command: |
@@ -87,7 +87,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-deps]
+          keys: [backend-build-deps-2]
       - run:
           name: Back-end Unit Test
           command: |
@@ -101,7 +101,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [frontend-build-deps]
+          keys: [frontend-build-deps-2]
       - run:
           name: Fron-end Scan Test
           command: |
@@ -109,10 +109,6 @@ jobs:
              npm i
              npm audit fix --force --audit-level-critical
              npm audit fix --force --audit-level-critical
-             npm audit fix --force --audit-level-critical
-             npm audit fix --force --audit-level-critical
-             npm audit fix --force --audit-level-critical
-             npm audit fix 
              npm audit --audit-level-critical
 
   scan-backend:
@@ -121,7 +117,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          keys: [backend-build-deps]
+          keys: [backend-build-deps-2]
       - run:
           name: Back-end Scan Test
           command: |
@@ -129,11 +125,6 @@ jobs:
              npm i
              npm audit fix --force --audit-level-critical
              npm audit fix --force --audit-level-critical
-             npm audit fix --force --audit-level-critical
-             npm audit fix --force --audit-level-critical
-             npm audit fix --force --audit-level-critical
-             npm audit fix --force --audit-level-critical
-             npm audit fix
              npm audit --audit-level-critical
 
 #   deploy-infrastructure:
