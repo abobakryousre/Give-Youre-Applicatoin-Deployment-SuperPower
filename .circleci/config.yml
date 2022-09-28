@@ -1,7 +1,7 @@
 version: 2.1
 
 commands:
-  install-awsCLI:
+  install_awscli:
     description: Install AWS CLI tool
     steps:
       - run:
@@ -152,7 +152,7 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
-      - install-awsCLI
+      - install_awscli
       - run:
           name: Ensure back-end infrastructure exists
           command: |
