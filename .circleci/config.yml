@@ -1,6 +1,28 @@
 version: 2.1
 
-# commands:
+commands:
+  install_awsCLI:
+    description: Install AWS CLI tool
+    steps:
+      - run:
+          name: Install AWS CLI
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+
+  install_ansible:
+    description: Install ansible
+    steps:
+      - run:
+          name: Install ansible
+          command: |
+            sudo apt update
+            sudo apt install software-properties-common
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install 
+            
+
 #   destroy-environment:
 #     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
 #     parameters:
@@ -103,11 +125,11 @@ jobs:
       - restore_cache:
           keys: [frontend-build-deps]
       - run:
-          name: Fron-end Scan Test
+          name: Front-end Scan Test
           command: |
              cd frontend
              npm i
-             npm audit fix --force --audit-level-critical
+             npm audit fix --force --audit-level=critical
              npm audit --audit-level=critical
 
   scan-backend:
@@ -122,8 +144,8 @@ jobs:
           command: |
              cd backend
              npm i
-             npm audit fix --force --audit-level-critical
-             npm audit fix --force --audit-level-critical
+             npm audit fix --force --audit-level=critical
+             npm audit fix --force --audit-level=critical
              npm audit --audit-level=critical
 
 #   deploy-infrastructure:
