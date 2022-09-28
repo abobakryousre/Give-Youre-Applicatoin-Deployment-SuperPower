@@ -109,6 +109,8 @@ jobs:
              npm i
              npm audit fix --force --audit-level-critical
              npm audit fix --force --audit-level-critical
+             npm audit fix --force --audit-level-critical
+             npm audit fix --force --audit-level-critical
              npm audit --audit-level-critical
 
   scan-backend:
@@ -123,6 +125,8 @@ jobs:
           command: |
              cd backend
              npm i
+             npm audit fix --force --audit-level-critical
+             npm audit fix --force --audit-level-critical
              npm audit fix --force --audit-level-critical
              npm audit fix --force --audit-level-critical
              npm audit fix --force --audit-level-critical
