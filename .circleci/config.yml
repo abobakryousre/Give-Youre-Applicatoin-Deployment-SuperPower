@@ -251,7 +251,7 @@ jobs:
       - image: cimg/base:stable
     steps:
       - checkout
-      - install_awsclli
+      - install_awscli
       - install_nodejs
 
       - restore_cache:
