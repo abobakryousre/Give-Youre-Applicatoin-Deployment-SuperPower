@@ -22,6 +22,7 @@ import { EmployeeModule } from '../domain/employees/employee.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => config.TypeOrmDatabase,
+      autoLoadEntities: true,
     }),
     OrdersModule,
     EmployeeModule,
