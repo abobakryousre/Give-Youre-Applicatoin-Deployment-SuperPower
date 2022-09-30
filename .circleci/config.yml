@@ -44,8 +44,14 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.Workflow_ID >>
+            
+            # Empty Front end bucket
             aws s3 rm s3://udapeople-<< parameters.Workflow_ID >>
+            
+            # Delete fronend stack
+            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.Workflow_ID >>
+            
+            # Delete backend stack
             aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.Workflow_ID >>
 
   revert_migrations:
