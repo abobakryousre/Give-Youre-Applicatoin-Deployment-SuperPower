@@ -75,6 +75,21 @@ commands:
             fi
             
 jobs:
+  deploy_cloudfront:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - install_awscli
+      - run:
+          name: Deploy cloudfront
+          command: |
+            cd .circleci/files
+            aws cloudformation deploy \
+            --template-file cloudfront.yml \
+            --stack-name InitialStack \
+            --parameter-overrides WorkflowID=wod1twx8tl
+
   build-frontend:
     docker:
       - image: cimg/node:13.8.0
@@ -352,16 +367,14 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            # your code here
-      - run:
-          name: Backend smoke test.
-          command: |
             BACKEND_IP=$(aws ec2 describe-instances \
             --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text)
             export API_URL=http://${BACKEND_IP}:3030
-
+      - run:
+          name: Backend smoke test.
+          command: |
             if curl ${API_URL}/api/status | grep "ok"
             then
               exit 0
@@ -381,6 +394,9 @@ jobs:
             fi
       - revert_migrations
       - destroy_environment
+  
+  
+
 
 #   cloudfront-update:
 #     docker:
@@ -420,31 +436,32 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
+      - deploy_cloudfront
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
       # - cleanup:
