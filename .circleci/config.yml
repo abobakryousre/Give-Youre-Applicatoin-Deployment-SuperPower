@@ -389,16 +389,15 @@ jobs:
     steps:
       - checkout
       - install_awscli
+      - install_nodejs
       - run:
           name: Save old workflow id kvdb.io
           command: |
-            OLD_WORKFLOW_ID=$(aws cloudformation \
-            list-exports --query "Exports[?Name=\`WorkflowID\`].Value" \
-            --no-paginate \
-            --output text)
-
-            echo " Old worklfow ID: $OLD_WORKFLOW_ID"
-            curl -d "$OLD_WORKFLOW_ID" https://kvdb.io/${KVDB_BUCKET_KEY}/OLD_WORKFLOW_ID
+            export OLD_WORKFLOW_ID=$(aws cloudformation \
+                      list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                      --no-paginate --output text)
+            echo "Old Wokflow ID: $OLD_WORKFLOW_ID"
+            curl https://kvdb.io/${KVDB_BUCKET_KEY}/old_workflow_id -d "${OLD_WORKFLOW_ID}"
 
 
       - run:
@@ -414,24 +413,29 @@ jobs:
       - destroy_environment
       
 
-# cleanup:
-#     docker:
-#       # Docker image here
-#     steps:
-#       # Checkout code from git
-#       - run:
-#           name: Get old stack workflow id
-#           command: |
-#             # your code here
-#             export OldWorkflowID="the id here"
-#             export STACKS=[] #put the list of stacks here
-#       - run:
-#           name: Remove old stacks and files
-#           command: |
-#             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
-#             then
-#               # your code here
-#             fi
+  cleanup:
+      docker:
+        - image: cimg/python:3.10
+      steps:
+        - checkout
+        - install_awscli
+        - run:
+            name: Remove old stacks and files
+            command: |
+              export STACKS=($(aws cloudformation list-stacks \
+                  --query "StackSummaries[*].StackName" \
+                  --stack-status-filter CREATE_COMPLETE --no-paginate --output text)) 
+              echo Stack names: "${STACKS[@]}"
+
+              export OldWorkflowID=$(curl --insecure https://kvdb.io/${KVDB_BUCKET_KEY}/old_workflow_id)
+              echo Old Workflow ID: $OldWorkflowID 
+
+              if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+              then
+                aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+                aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+                aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+              fi
             
 
 workflows:
@@ -465,5 +469,5 @@ workflows:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
           requires: [smoke-test]
-      # - cleanup:
-      #     requires: [cloudfront-update]
+      - cleanup:
+          requires: [cloudfront-update]
