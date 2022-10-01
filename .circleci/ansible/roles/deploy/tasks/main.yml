@@ -4,20 +4,12 @@
     state: directory
 
 
-- name: "create backend2 dir"
-  file:
-    path: ~/backend2
-    state: directory
 
 - name: "Unarchive backend file"
   unarchive:
     src: artifact.tar.gz
     dest: ~/backend-app
 
-- name: "Unarchive backend2 file"
-  unarchive:
-    src: artifact2.tar.gz
-    dest: ~/backend2
 
 - name: "install nodejs package depandencies"
   shell: |
