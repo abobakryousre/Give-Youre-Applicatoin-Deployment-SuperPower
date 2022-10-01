@@ -436,26 +436,26 @@ jobs:
 #             fi
             
 
-test:
-    docker:
-      - image: cimg/python:3.10
-    steps:
-      - run:
-          name: Get backend url
-          command: |
-            
-            export API_URL=https://google.com
-            echo $API_URL
-      - run:
-          name: Backend smoke test.
-          command: |
-            echo ${API_URL}
-            if curl ${API_URL}
-            then
-              exit 0
-            else
-              exit 1
-            fi
+  test:
+      docker:
+        - image: cimg/python:3.10
+      steps:
+        - run:
+            name: Get backend url
+            command: |
+              
+              export API_URL=https://google.com
+              echo $API_URL
+        - run:
+            name: Backend smoke test.
+            command: |
+              echo ${API_URL}
+              if curl ${API_URL}
+              then
+                exit 0
+              else
+                exit 1
+              fi
 workflows:
   default:
     jobs:
