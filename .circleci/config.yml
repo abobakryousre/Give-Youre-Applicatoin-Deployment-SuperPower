@@ -358,11 +358,11 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text)
             export API_URL=http://${BACKEND_IP}:3030
-            echo $API_URL
       - run:
           name: Backend smoke test.
           command: |
-            if curl $API_URL/api/status | grep "ok"
+            echo ${API_URL}
+            if curl ${API_URL}/api/status | grep "ok"
             then
               exit 0
             else
@@ -375,9 +375,9 @@ jobs:
             S3_URL=http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com
             if curl -s $S3_URL | grep "Welcome"
             then
-              exit 1
+              exit 0
             else
-              exit 2
+              exit 1
             fi
       - revert_migrations
       - destroy_environment
@@ -436,36 +436,56 @@ jobs:
 #             fi
             
 
+test:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - run:
+          name: Get backend url
+          command: |
+            
+            export API_URL=https://google.com
+            echo $API_URL
+      - run:
+          name: Backend smoke test.
+          command: |
+            echo ${API_URL}
+            if curl ${API_URL}
+            then
+              exit 0
+            else
+              exit 1
+            fi
 workflows:
   default:
     jobs:
-      
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [master]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          requires: [smoke-test]
+      - test
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - deploy-infrastructure:
+      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      #     filters:
+      #       branches:
+      #         only: [master]
+      # - configure-infrastructure:
+      #     requires: [deploy-infrastructure]
+      # - run-migrations:
+      #     requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
+      # - cloudfront-update:
+      #     requires: [smoke-test]
       # - cleanup:
       #     requires: [cloudfront-update]
