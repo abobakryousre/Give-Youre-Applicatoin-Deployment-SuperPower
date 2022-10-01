@@ -4,19 +4,28 @@
     state: directory
 
 
+- name: "create backend2 dir"
+  file:
+    path: ~/backend2
+    state: directory
+
 - name: "Unarchive backend file"
   unarchive:
     src: artifact.tar.gz
     dest: ~/backend-app
 
+- name: "Unarchive backend2 file"
+  unarchive:
+    src: artifact2.tar.gz
+    dest: ~/backend2
 
-- name: "install node depandencies"
+- name: "install nodejs package depandencies"
   shell: |
     cd ~/backend-app
-    npm i
+    npm install
 
 
-- name: "Run NodeJS app with PM2"
+- name: "Run NodeJS backend app with PM2"
   shell: |
     cd ~/backend-app/dist
     pm2 stop default
