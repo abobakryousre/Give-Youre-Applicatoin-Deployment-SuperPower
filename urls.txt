@@ -1,0 +1,4 @@
+repo -> https://github.com/abobakryousre/Give-Youre-Applicatoin-Deployment-SuperPower
+Cloudfront ->  https://d326vh22p4rh1l.cloudfront.net/#/employees
+backend server -> http://52.201.41.79:3030/api/status
+prometheus server -> http://44.211.170.232:9090
